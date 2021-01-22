@@ -1,13 +1,6 @@
 #CMake最低版本号要求
 cmake_minimum_required(VERSION 3.8)
 
-#设置CMake查找包目录
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-#项目依赖
-find_package(XanaduRuntime)
-find_package(XanaduCore)
-
 #项目名称
 project(XanaduJson)
 
@@ -30,6 +23,12 @@ elseif (UNIX)
 	set(CMAKE_INSTALL_PREFIX /usr)
 endif ()
 
+#设置模块搜索路径
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_INSTALL_PREFIX}/lib/cmake)
+
+#项目依赖
+find_package(XanaduRuntime REQUIRED)
+find_package(XanaduCore REQUIRED)
 
 #C++支持
 set(CMAKE_CXX_STANDARD 17)
@@ -67,7 +66,7 @@ endif ()
 add_library(XanaduJson SHARED ${SRC})
 
 #设置项目版本号
-set_target_properties(XanaduJson PROPERTIES VERSION 0.0.1 SOVERSION 0)
+set_target_properties(XanaduJson PROPERTIES VERSION 0.1.0 SOVERSION 0)
 
 #设置安装文件(静态库)
 install(TARGETS XanaduJson ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
@@ -83,3 +82,6 @@ install(TARGETS XanaduJson LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/XanaduJson DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 #安装头文件
 #install(FILES ${PROJECT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+#配置模块文件
+install(FILES ${PROJECT_SOURCE_DIR}/config/FindXanaduJson.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake)
+install(FILES ${PROJECT_SOURCE_DIR}/config/XanaduJson.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
