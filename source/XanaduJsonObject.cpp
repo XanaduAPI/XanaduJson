@@ -1359,19 +1359,27 @@ XANADU_JSON_EXPORT void XJson_ReplaceItemInObject(XANADU_JSON_INFO* _Object, con
 
 XJsonObject::XJsonObject(XANADU_JSON_INFO* _JsonData) XANADU_NOTHROW : _ThisJsonData(nullptr), _ThisExternJsonDataRef(_JsonData)
 {
+	this->_ThisJsonArrayRef = XANADU_NEW std::map<unsigned int, XJsonObject*>();
+	this->_ThisJsonObjectRef = XANADU_NEW std::map<UString, XJsonObject*>();
 }
 
 XJsonObject::XJsonObject() XANADU_NOTHROW : _ThisJsonData(nullptr), _ThisExternJsonDataRef(nullptr)
 {
+	this->_ThisJsonArrayRef = XANADU_NEW std::map<unsigned int, XJsonObject*>();
+	this->_ThisJsonObjectRef = XANADU_NEW std::map<UString, XJsonObject*>();
 }
 
 XJsonObject::XJsonObject(const UString& _JsonString) XANADU_NOTHROW : _ThisJsonData(nullptr), _ThisExternJsonDataRef(nullptr)
 {
+	this->_ThisJsonArrayRef = XANADU_NEW std::map<unsigned int, XJsonObject*>();
+	this->_ThisJsonObjectRef = XANADU_NEW std::map<UString, XJsonObject*>();
 	Parse(_JsonString);
 }
 
 XJsonObject::XJsonObject(const XJsonObject* _JsonObject) XANADU_NOTHROW : _ThisJsonData(nullptr), _ThisExternJsonDataRef(nullptr)
 {
+	this->_ThisJsonArrayRef = XANADU_NEW std::map<unsigned int, XJsonObject*>();
+	this->_ThisJsonObjectRef = XANADU_NEW std::map<UString, XJsonObject*>();
 	if(_JsonObject)
 	{
 		Parse(_JsonObject->ToString());
@@ -1380,12 +1388,16 @@ XJsonObject::XJsonObject(const XJsonObject* _JsonObject) XANADU_NOTHROW : _ThisJ
 
 XJsonObject::XJsonObject(const XJsonObject& _JsonObject) XANADU_NOTHROW : _ThisJsonData(nullptr), _ThisExternJsonDataRef(nullptr)
 {
+	this->_ThisJsonArrayRef = XANADU_NEW std::map<unsigned int, XJsonObject*>();
+	this->_ThisJsonObjectRef = XANADU_NEW std::map<UString, XJsonObject*>();
 	Parse(_JsonObject.ToString());
 }
 
 XJsonObject::~XJsonObject() XANADU_NOTHROW
 {
 	Clear();
+	XANADU_DELETE_PTR(this->_ThisJsonArrayRef);
+	XANADU_DELETE_PTR(this->_ThisJsonObjectRef);
 }
 
 
@@ -1420,18 +1432,18 @@ bool XJsonObject::AddEmptySubObject(const UString& _Key) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateObject();
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("create sub empty object error!");
+		_ThisErrorMessage = L"create sub empty object error!";
 		return false;
 	}
 	XJson_AddItemToObject(vFocusData, _Key.data(), vJsonStruct);
@@ -1457,18 +1469,18 @@ bool XJsonObject::AddEmptySubArray(const UString& _Key) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateArray();
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("create sub empty array error!");
+		_ThisErrorMessage = L"create sub empty array error!";
 		return false;
 	}
 	XJson_AddItemToObject(vFocusData, _Key.data(), vJsonStruct);
@@ -1477,8 +1489,8 @@ bool XJsonObject::AddEmptySubArray(const UString& _Key) XANADU_NOTHROW
 
 XJsonObject& XJsonObject::operator[](const UString& _Key) XANADU_NOTHROW
 {
-	auto		vIterator = _ThisJsonObjectRef.find(_Key);
-	if(vIterator == _ThisJsonObjectRef.end())
+	auto		vIterator = _ThisJsonObjectRef->find(_Key);
+	if(vIterator == _ThisJsonObjectRef->end())
 	{
 		auto		vJsonStruct = static_cast<XANADU_JSON_INFO*>(nullptr);
 		if(_ThisJsonData)
@@ -1498,13 +1510,13 @@ XJsonObject& XJsonObject::operator[](const UString& _Key) XANADU_NOTHROW
 		if(vJsonStruct)
 		{
 			auto		vJsonObject = new XJsonObject(vJsonStruct);
-			_ThisJsonObjectRef.insert(std::pair<UString, XJsonObject*>(_Key, vJsonObject));
+			_ThisJsonObjectRef->insert(std::pair<UString, XJsonObject*>(_Key, vJsonObject));
 			return(*vJsonObject);
 		}
 		else
 		{
 			auto		vJsonObject = new XJsonObject();
-			_ThisJsonObjectRef.insert(std::pair<UString, XJsonObject*>(_Key, vJsonObject));
+			_ThisJsonObjectRef->insert(std::pair<UString, XJsonObject*>(_Key, vJsonObject));
 			return(*vJsonObject);
 		}
 	}
@@ -1516,8 +1528,8 @@ XJsonObject& XJsonObject::operator[](const UString& _Key) XANADU_NOTHROW
 
 XJsonObject& XJsonObject::operator[](unsigned int _Which) XANADU_NOTHROW
 {
-	auto		vIterator = _ThisJsonArrayRef.find(_Which);
-	if(vIterator == _ThisJsonArrayRef.end())
+	auto		vIterator = _ThisJsonArrayRef->find(_Which);
+	if(vIterator == _ThisJsonArrayRef->end())
 	{
 		auto		vJsonStruct = static_cast<XANADU_JSON_INFO*>(nullptr);
 		if(_ThisJsonData)
@@ -1537,13 +1549,13 @@ XJsonObject& XJsonObject::operator[](unsigned int _Which) XANADU_NOTHROW
 		if(vJsonStruct)
 		{
 			auto		vJsonObject = new XJsonObject(vJsonStruct);
-			_ThisJsonArrayRef.insert(std::pair<unsigned int, XJsonObject*>(_Which, vJsonObject));
+			_ThisJsonArrayRef->insert(std::pair<unsigned int, XJsonObject*>(_Which, vJsonObject));
 			return(*vJsonObject);
 		}
 		else
 		{
 			auto		vJsonObject = new XJsonObject();
-			_ThisJsonArrayRef.insert(std::pair<unsigned int, XJsonObject*>(_Which, vJsonObject));
+			_ThisJsonArrayRef->insert(std::pair<unsigned int, XJsonObject*>(_Which, vJsonObject));
 			return(*vJsonObject);
 		}
 	}
@@ -1713,7 +1725,8 @@ bool XJsonObject::Parse(const UString& strJson) XANADU_NOTHROW
 	_ThisJsonData = XJson_Parse(strJson.data());
 	if(nullptr == _ThisJsonData)
 	{
-		_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		_ThisErrorMessage = L"prase json string error at ";
 		return false;
 	}
 	return true;
@@ -1727,7 +1740,7 @@ void XJsonObject::Clear() XANADU_NOTHROW
 		XJson_Delete(_ThisJsonData);
 		_ThisJsonData = nullptr;
 	}
-	for(auto vIterator = _ThisJsonArrayRef.begin(); vIterator != _ThisJsonArrayRef.end(); ++vIterator)
+	for(auto vIterator = _ThisJsonArrayRef->begin(); vIterator != _ThisJsonArrayRef->end(); ++vIterator)
 	{
 		if(vIterator->second)
 		{
@@ -1735,8 +1748,8 @@ void XJsonObject::Clear() XANADU_NOTHROW
 			vIterator->second = nullptr;
 		}
 	}
-	_ThisJsonArrayRef.clear();
-	for(auto vIterator = _ThisJsonObjectRef.begin(); vIterator != _ThisJsonObjectRef.end(); ++vIterator)
+	_ThisJsonArrayRef->clear();
+	for(auto vIterator = _ThisJsonObjectRef->begin(); vIterator != _ThisJsonObjectRef->end(); ++vIterator)
 	{
 		if(vIterator->second)
 		{
@@ -1744,7 +1757,7 @@ void XJsonObject::Clear() XANADU_NOTHROW
 			vIterator->second = nullptr;
 		}
 	}
-	_ThisJsonObjectRef.clear();
+	_ThisJsonObjectRef->clear();
 }
 
 bool XJsonObject::IsEmpty() const XANADU_NOTHROW
@@ -1831,7 +1844,7 @@ UString XJsonObject::ToFormattedString() const XANADU_NOTHROW
 	return vJsonData;
 }
 
-const UString& XJsonObject::GetErrMsg() const XANADU_NOTHROW
+const XString& XJsonObject::GetErrMsg() const XANADU_NOTHROW
 {
 	return _ThisErrorMessage;
 }
@@ -2125,18 +2138,19 @@ bool XJsonObject::Add(const UString& _Key, const XJsonObject& _Value) XANADU_NOT
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		///_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		_ThisErrorMessage = L"prase json string error";
 		return false;
 	}
 	XJson_AddItemToObject(vFocusData, _Key.data(), vJsonStruct);
@@ -2144,15 +2158,15 @@ bool XJsonObject::Add(const UString& _Key, const XJsonObject& _Value) XANADU_NOT
 	{
 		return false;
 	}
-	auto		vIterator = _ThisJsonObjectRef.find(_Key);
-	if(vIterator != _ThisJsonObjectRef.end())
+	auto		vIterator = _ThisJsonObjectRef->find(_Key);
+	if(vIterator != _ThisJsonObjectRef->end())
 	{
 		if(vIterator->second)
 		{
 			delete (vIterator->second);
 			vIterator->second = nullptr;
 		}
-		_ThisJsonObjectRef.erase(vIterator);
+		_ThisJsonObjectRef->erase(vIterator);
 	}
 	return true;
 }
@@ -2176,12 +2190,12 @@ bool XJsonObject::Add(const UString& _Key, const UString& _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateString(_Value.data());
@@ -2221,12 +2235,12 @@ bool XJsonObject::Add(const UString& _Key, int32S _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -2261,12 +2275,12 @@ bool XJsonObject::Add(const UString& _Key, int32U _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -2301,12 +2315,12 @@ bool XJsonObject::Add(const UString& _Key, int64S _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -2341,12 +2355,12 @@ bool XJsonObject::Add(const UString& _Key, int64U _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt(_Value, 1);
@@ -2383,12 +2397,12 @@ bool XJsonObject::Add(const UString& _Key, bool _Value, bool _Again) XANADU_NOTH
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateBool(_Value);
@@ -2423,12 +2437,12 @@ bool XJsonObject::Add(const UString& _Key, float _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -2463,12 +2477,12 @@ bool XJsonObject::Add(const UString& _Key, double _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -2489,6 +2503,11 @@ bool XJsonObject::Add(const UString& _Key, double _Value) XANADU_NOTHROW
 bool XJsonObject::Append(const UString& _Key, const XJsonObject& _Value) XANADU_NOTHROW
 {
 	return Add(_Key, _Value);
+}
+
+bool XJsonObject::Append(const UString& _Key, const XByteArray& _Value) XANADU_NOTHROW
+{
+	return Add(_Key, UString(_Value.data(), _Value.size()));
 }
 
 bool XJsonObject::Append(const UString& _Key, const XString& _Value) XANADU_NOTHROW
@@ -2546,24 +2565,24 @@ bool XJsonObject::Delete(const UString& _Key) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	XJson_DeleteItemFromObject(vFocusData, _Key.data());
-	auto		vIterator = _ThisJsonObjectRef.find(_Key);
-	if(vIterator != _ThisJsonObjectRef.end())
+	auto		vIterator = _ThisJsonObjectRef->find(_Key);
+	if(vIterator != _ThisJsonObjectRef->end())
 	{
 		if(vIterator->second)
 		{
 			delete (vIterator->second);
 			vIterator->second = nullptr;
 		}
-		_ThisJsonObjectRef.erase(vIterator);
+		_ThisJsonObjectRef->erase(vIterator);
 	}
 	return true;
 }
@@ -2583,18 +2602,19 @@ bool XJsonObject::Replace(const UString& _Key, const XJsonObject& _Value) XANADU
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		_ThisErrorMessage = L"prase json string error at ";
 		return false;
 	}
 	XJson_ReplaceItemInObject(vFocusData, _Key.data(), vJsonStruct);
@@ -2602,15 +2622,15 @@ bool XJsonObject::Replace(const UString& _Key, const XJsonObject& _Value) XANADU
 	{
 		return false;
 	}
-	auto		vIterator = _ThisJsonObjectRef.find(_Key);
-	if(vIterator != _ThisJsonObjectRef.end())
+	auto		vIterator = _ThisJsonObjectRef->find(_Key);
+	if(vIterator != _ThisJsonObjectRef->end())
 	{
 		if(vIterator->second)
 		{
 			delete (vIterator->second);
 			vIterator->second = nullptr;
 		}
-		_ThisJsonObjectRef.erase(vIterator);
+		_ThisJsonObjectRef->erase(vIterator);
 	}
 	return true;
 }
@@ -2628,12 +2648,12 @@ bool XJsonObject::Replace(const UString& _Key, const UString& _Value) XANADU_NOT
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateString(_Value.data());
@@ -2662,12 +2682,12 @@ bool XJsonObject::Replace(const UString& _Key, int32S _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -2696,12 +2716,12 @@ bool XJsonObject::Replace(const UString& _Key, int32U _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -2730,12 +2750,12 @@ bool XJsonObject::Replace(const UString& _Key, int64S _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -2764,12 +2784,12 @@ bool XJsonObject::Replace(const UString& _Key, int64U _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -2800,12 +2820,12 @@ bool XJsonObject::Replace(const UString& _Key, bool _Value, bool _Again) XANADU_
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateBool(_Value);
@@ -2834,12 +2854,12 @@ bool XJsonObject::Replace(const UString& _Key, float _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -2868,12 +2888,12 @@ bool XJsonObject::Replace(const UString& _Key, double _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Object)
 	{
-		_ThisErrorMessage = "not a json object! json array?";
+		_ThisErrorMessage = L"not a json object! json array?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -2903,6 +2923,13 @@ UString XJsonObject::ToString(UString _Key) const XANADU_NOTHROW
 	auto		vValue = UString("");
 	Get(_Key, vValue);
 	return vValue;
+}
+
+XByteArray XJsonObject::ToBytes(const UString& _Key) const XANADU_NOTHROW
+{
+	auto		vValue = UString("");
+	Get(_Key, vValue);
+	return XByteArray(vValue.data(), vValue.size());
 }
 
 XString XJsonObject::ToXString(UString _Key) const XANADU_NOTHROW
@@ -3264,18 +3291,19 @@ bool XJsonObject::Add(const XJsonObject& _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		_ThisErrorMessage = L"prase json string error";
 		return false;
 	}
 	auto		vArraySizeBeforeAdd = XJson_GetArraySize(vFocusData);
@@ -3286,7 +3314,7 @@ bool XJsonObject::Add(const XJsonObject& _Value) XANADU_NOTHROW
 		return false;
 	}
 	auto		vLastIndex = (unsigned int)XJson_GetArraySize(vFocusData) - 1;
-	for(auto vIterator = _ThisJsonArrayRef.begin(); vIterator != _ThisJsonArrayRef.end();)
+	for(auto vIterator = _ThisJsonArrayRef->begin(); vIterator != _ThisJsonArrayRef->end();)
 	{
 		if(vIterator->first >= vLastIndex)
 		{
@@ -3295,7 +3323,7 @@ bool XJsonObject::Add(const XJsonObject& _Value) XANADU_NOTHROW
 				delete (vIterator->second);
 				vIterator->second = nullptr;
 			}
-			_ThisJsonArrayRef.erase(vIterator++);
+			_ThisJsonArrayRef->erase(vIterator++);
 		}
 		else
 		{
@@ -3324,12 +3352,12 @@ bool XJsonObject::Add(const UString& _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateString(_Value.data());
@@ -3366,12 +3394,12 @@ bool XJsonObject::Add(int32S _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -3408,12 +3436,12 @@ bool XJsonObject::Add(int32U _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -3450,12 +3478,12 @@ bool XJsonObject::Add(int64S _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -3492,12 +3520,12 @@ bool XJsonObject::Add(int64U _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -3536,12 +3564,12 @@ bool XJsonObject::Add(int _Anywhere, bool _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateBool(_Value);
@@ -3578,12 +3606,12 @@ bool XJsonObject::Add(float _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -3620,12 +3648,12 @@ bool XJsonObject::Add(double _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -3664,18 +3692,19 @@ bool XJsonObject::AddAsFirst(const XJsonObject& _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		_ThisErrorMessage = L"prase json string error at ";
 		return false;
 	}
 	auto		vArraySizeBeforeAdd = XJson_GetArraySize(vFocusData);
@@ -3685,14 +3714,14 @@ bool XJsonObject::AddAsFirst(const XJsonObject& _Value) XANADU_NOTHROW
 	{
 		return false;
 	}
-	for(auto vIterator = _ThisJsonArrayRef.begin(); vIterator != _ThisJsonArrayRef.end();)
+	for(auto vIterator = _ThisJsonArrayRef->begin(); vIterator != _ThisJsonArrayRef->end();)
 	{
 		if(vIterator->second)
 		{
 			delete (vIterator->second);
 			vIterator->second = nullptr;
 		}
-		_ThisJsonArrayRef.erase(vIterator++);
+		_ThisJsonArrayRef->erase(vIterator++);
 	}
 	return true;
 }
@@ -3716,12 +3745,12 @@ bool XJsonObject::AddAsFirst(const UString& _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateString(_Value.data());
@@ -3758,12 +3787,12 @@ bool XJsonObject::AddAsFirst(int32S _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -3800,12 +3829,12 @@ bool XJsonObject::AddAsFirst(int32U _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -3842,12 +3871,12 @@ bool XJsonObject::AddAsFirst(int64S _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -3884,12 +3913,12 @@ bool XJsonObject::AddAsFirst(int64U _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -3928,12 +3957,12 @@ bool XJsonObject::AddAsFirst(int _Anywhere, bool _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateBool(_Value);
@@ -3970,12 +3999,12 @@ bool XJsonObject::AddAsFirst(float _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -4012,12 +4041,12 @@ bool XJsonObject::AddAsFirst(double _Value) XANADU_NOTHROW
 
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -4050,16 +4079,16 @@ bool XJsonObject::Delete(int _Which) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	XJson_DeleteItemFromArray(vFocusData, _Which);
-	for(auto vIterator = _ThisJsonArrayRef.begin(); vIterator != _ThisJsonArrayRef.end();)
+	for(auto vIterator = _ThisJsonArrayRef->begin(); vIterator != _ThisJsonArrayRef->end();)
 	{
 		if(vIterator->first >= (unsigned int)_Which)
 		{
@@ -4068,7 +4097,7 @@ bool XJsonObject::Delete(int _Which) XANADU_NOTHROW
 				delete (vIterator->second);
 				vIterator->second = nullptr;
 			}
-			_ThisJsonArrayRef.erase(vIterator++);
+			_ThisJsonArrayRef->erase(vIterator++);
 		}
 		else
 		{
@@ -4093,18 +4122,18 @@ bool XJsonObject::Replace(int _Which, const XJsonObject& _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		_ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
 		return false;
 	}
 	XJson_ReplaceItemInArray(vFocusData, _Which, vJsonStruct);
@@ -4112,15 +4141,15 @@ bool XJsonObject::Replace(int _Which, const XJsonObject& _Value) XANADU_NOTHROW
 	{
 		return false;
 	}
-	auto		vIterator = _ThisJsonArrayRef.find(_Which);
-	if(vIterator != _ThisJsonArrayRef.end())
+	auto		vIterator = _ThisJsonArrayRef->find(_Which);
+	if(vIterator != _ThisJsonArrayRef->end())
 	{
 		if(vIterator->second)
 		{
 			delete (vIterator->second);
 			vIterator->second = nullptr;
 		}
-		_ThisJsonArrayRef.erase(vIterator);
+		_ThisJsonArrayRef->erase(vIterator);
 	}
 	return true;
 }
@@ -4138,12 +4167,12 @@ bool XJsonObject::Replace(int _Which, const UString& _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateString(_Value.data());
@@ -4172,12 +4201,12 @@ bool XJsonObject::Replace(int _Which, int32S _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, -1);
@@ -4206,12 +4235,12 @@ bool XJsonObject::Replace(int _Which, int32U _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -4240,12 +4269,12 @@ bool XJsonObject::Replace(int _Which, int64S _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)((int64U)_Value), -1);
@@ -4274,12 +4303,12 @@ bool XJsonObject::Replace(int _Which, int64U _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateInt((int64U)_Value, 1);
@@ -4310,12 +4339,12 @@ bool XJsonObject::Replace(int _Which, bool _Value, bool _Again) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateBool(_Value);
@@ -4344,12 +4373,12 @@ bool XJsonObject::Replace(int _Which, float _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);
@@ -4378,12 +4407,12 @@ bool XJsonObject::Replace(int _Which, double _Value) XANADU_NOTHROW
 	}
 	if(nullptr == vFocusData)
 	{
-		_ThisErrorMessage = "json data is null!";
+		_ThisErrorMessage = L"json data is null!";
 		return false;
 	}
 	if(vFocusData->type != XJson_Array)
 	{
-		_ThisErrorMessage = "not a json array! json object?";
+		_ThisErrorMessage = L"not a json array! json object?";
 		return false;
 	}
 	auto		vJsonStruct = XJson_CreateDouble((double)_Value, -1);

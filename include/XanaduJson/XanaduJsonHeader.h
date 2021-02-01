@@ -1,8 +1,4 @@
-﻿//
-// Created by Administrator on 2021/1/14.
-//
-
-#ifndef			_XANADU_JSON_HEADER_H_
+﻿#ifndef			_XANADU_JSON_HEADER_H_
 #define			_XANADU_JSON_HEADER_H_
 
 #include <XanaduRuntime/XanaduRuntime.h>
