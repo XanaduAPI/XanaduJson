@@ -17,6 +17,12 @@ elseif (UNIX)
 	message(STATUS "Current Platform : UNIX")
 endif ()
 
+# 配置查找包
+set(XANADU_INSTALL_CMAKE "${CMAKE_SOURCE_DIR}/config/Find${PROJECT_NAME}.cmake")
+set(XANADU_INSTALL_PKG_CONFIG "${CMAKE_SOURCE_DIR}/config/${PROJECT_NAME}.pc")
+configure_file("${XANADU_INSTALL_CMAKE}.in" "${XANADU_INSTALL_CMAKE}")
+configure_file("${XANADU_INSTALL_PKG_CONFIG}.in" "${XANADU_INSTALL_PKG_CONFIG}")
+
 # 设置模块搜索路径
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_INSTALL_PREFIX}/lib/cmake)
 
