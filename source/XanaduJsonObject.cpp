@@ -1821,7 +1821,7 @@ UString XJsonObject::ToString() const XANADU_NOTHROW
 
 XString XJsonObject::ToXString() const XANADU_NOTHROW
 {
-	return XString::FromUString(ToString());
+	return XString::fromUString(ToString());
 }
 
 UString XJsonObject::ToFormattedString() const XANADU_NOTHROW
@@ -1873,7 +1873,9 @@ bool XJsonObject::Get(const UString& _Key, XJsonObject& _Value) const XANADU_NOT
 		return false;
 	}
 	auto		vJsonString = XJson_Print(vJsonStruct);
-	auto		vJsonData = UString(vJsonString);
+
+	/// Fix : basic_string::_M_construct null not valid
+	auto		vJsonData = UString(vJsonString ? vJsonString : "");
 	Xanadu::free(vJsonString);
 	if(_Value.Parse(vJsonData))
 	{
@@ -2213,7 +2215,7 @@ bool XJsonObject::Add(const UString& _Key, const UString& _Value) XANADU_NOTHROW
 
 bool XJsonObject::Add(const UString& _Key, const XString& _Value) XANADU_NOTHROW
 {
-	return Add(_Key, _Value.ToUString());
+	return Add(_Key, _Value.toUString());
 }
 
 bool XJsonObject::Add(const UString& _Key, int32S _Value) XANADU_NOTHROW
@@ -2512,7 +2514,7 @@ bool XJsonObject::Append(const UString& _Key, const XByteArray& _Value) XANADU_N
 
 bool XJsonObject::Append(const UString& _Key, const XString& _Value) XANADU_NOTHROW
 {
-	return Add(_Key, _Value.ToUString());
+	return Add(_Key, _Value.toUString());
 }
 
 bool XJsonObject::Append(const UString& _Key, int32S _Value) XANADU_NOTHROW
@@ -2936,7 +2938,7 @@ XString XJsonObject::ToXString(UString _Key) const XANADU_NOTHROW
 {
 	auto		vValue = UString("");
 	Get(_Key, vValue);
-	return XString::FromUString(vValue);
+	return XString::fromUString(vValue);
 }
 
 double XJsonObject::ToDouble(UString _Key) const XANADU_NOTHROW

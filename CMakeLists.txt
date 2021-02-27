@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 # 项目名称
-project(XanaduJson VERSION 0.2.0)
+project(XanaduJson VERSION 0.3.0)
 
 # 设置安装路径
 message(STATUS "Operation System : ${CMAKE_SYSTEM}")
@@ -10,9 +10,10 @@ if (WIN32)
 	set(CMAKE_INSTALL_PREFIX C:/Xanadu)
 endif ()
 
-# 配置查找包
+# 配置文件
 configure_file("${CMAKE_SOURCE_DIR}/config/Find${PROJECT_NAME}.cmake.in" "${CMAKE_BINARY_DIR}/Find${PROJECT_NAME}.cmake")
 configure_file("${CMAKE_SOURCE_DIR}/config/${PROJECT_NAME}.pc.in" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+configure_file("${CMAKE_SOURCE_DIR}/config/VersionInfo.rc.in" "${CMAKE_BINARY_DIR}/VersionInfo.rc")
 
 # 设置模块搜索路径
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_INSTALL_PREFIX}/lib/cmake)
@@ -41,7 +42,6 @@ add_definitions(-DXANADU_JSON_LIB)
 # 包含源文件
 aux_source_directory(./source SRC)
 if (MSVC)
-	configure_file("${CMAKE_SOURCE_DIR}/config/VersionInfo.rc.in" "${CMAKE_BINARY_DIR}/VersionInfo.rc")
 	list(APPEND SRC ${CMAKE_BINARY_DIR}/VersionInfo.rc)
 endif ()
 
@@ -61,7 +61,7 @@ endif ()
 add_library(${PROJECT_NAME} SHARED ${SRC})
 
 # 设置项目属性
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION 0.2.0 SOVERSION 0)
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION 0.3.0 SOVERSION 0)
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX D)
 
 # 设置安装文件(静态库)
