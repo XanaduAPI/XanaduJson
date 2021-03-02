@@ -4,12 +4,12 @@
 
 #include <XanaduJson/XanaduJson.h>
 
-bool XANADUAPI Xanadu_Json_Initialize() XANADU_NOTHROW
+bool XANADUAPI Xanadu_Json_Initialize() noexcept
 {
 return true;
 };
 
-void XANADUAPI Xanadu_Json_Release() XANADU_NOTHROW
+void XANADUAPI Xanadu_Json_Release() noexcept
 {
 };
 
