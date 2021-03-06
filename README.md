@@ -22,12 +22,12 @@ set shiftwidth=8
 ## Comment format
 
 ~~~shell
-/// <summary>
-/// Overview of current call
-/// </summary>
-/// <param name="_ParameterName">Parameter description</param>
-/// <returns>Return to description</returns>
-/// <examples>Instructions</examples>
+// <summary>
+// Overview of current call
+// </summary>
+// <param name="_ParameterName">Parameter description</param>
+// <returns>Return to description</returns>
+// <examples>Instructions</examples>
 ~~~
 
 

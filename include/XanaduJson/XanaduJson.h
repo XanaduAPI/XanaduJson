@@ -3,4 +3,4 @@
 
 #include <XanaduJson/XanaduJsonObject.h>
 
-#endif /// _XANADU_JSON_H_
+#endif // _XANADU_JSON_H_

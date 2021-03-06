@@ -14,7 +14,7 @@
 static const char* _StaticErrorPtr = nullptr;
 static const unsigned char _StaticFirstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 
-/// JSON String
+// JSON String
 static int XJson_strcasecmp(const char* _String1, const char* _String2)
 {
 	if(nullptr == _String1)
@@ -35,7 +35,7 @@ static int XJson_strcasecmp(const char* _String1, const char* _String2)
 	return tolower(*(const unsigned char*)_String1) - tolower(*(const unsigned char*)_String2);
 };
 
-/// JSON String
+// JSON String
 static char* XJson_strdup(const char* _String)
 {
 	auto		vLength = Xanadu::strlen(_String) + 1;
@@ -48,7 +48,7 @@ static char* XJson_strdup(const char* _String)
 	return vCopy;
 };
 
-/// 内部构造函数
+// 内部构造函数
 XANADU_JSON_INFO* XJson_New_Item()
 {
 	auto		vNode = (XANADU_JSON_INFO*)Xanadu::malloc(sizeof(XANADU_JSON_INFO));
@@ -59,7 +59,7 @@ XANADU_JSON_INFO* XJson_New_Item()
 	return vNode;
 }
 
-/// 解析输入文本以生成一个数字，并将结果填充到item中
+// 解析输入文本以生成一个数字，并将结果填充到item中
 static const char* parse_number(XANADU_JSON_INFO* _Item, const char* _Num)
 {
 	long double n = 0, vScale = 0;
@@ -124,7 +124,7 @@ static const char* parse_number(XANADU_JSON_INFO* _Item, const char* _Num)
 	return _Num;
 }
 
-/// 将给定项中的数字精确地呈现为字符串
+// 将给定项中的数字精确地呈现为字符串
 static char* print_double(XANADU_JSON_INFO* _Item)
 {
 	auto		vValue = _Item->valuedouble;
@@ -147,7 +147,7 @@ static char* print_double(XANADU_JSON_INFO* _Item)
 	return vString;
 }
 
-/// 将给定项中的数字精确地呈现为字符串
+// 将给定项中的数字精确地呈现为字符串
 static char* print_int(XANADU_JSON_INFO* _Item)
 {
 	auto		vString = (char*)Xanadu::malloc(22); /* 2^64+1 can be represented in 21 chars. */
@@ -179,7 +179,7 @@ static char* print_int(XANADU_JSON_INFO* _Item)
 	return vString;
 }
 
-/// 将输入文本解析为未转义的cstring，并填充项
+// 将输入文本解析为未转义的cstring，并填充项
 static const char* parse_string(XANADU_JSON_INFO* _Item, const char* _String)
 {
 	auto		vPtr = _String + 1;
@@ -308,7 +308,7 @@ static const char* parse_string(XANADU_JSON_INFO* _Item, const char* _String)
 	return vPtr;
 }
 
-/// 将提供的cstring呈现为可打印的转义版本
+// 将提供的cstring呈现为可打印的转义版本
 static char* print_string_ptr(const char* _String)
 {
 	auto		vPtr1 = static_cast<const char*>(nullptr);
@@ -390,32 +390,32 @@ static char* print_string_ptr(const char* _String)
 	return vOut;
 }
 
-/// 项目上的Invote print_string_ptr（这很有用）
+// 项目上的Invote print_string_ptr（这很有用）
 static char* print_string(XANADU_JSON_INFO* _Item)
 {
 	return print_string_ptr(_Item->valuestring);
 }
 
 
-/// 预先公布这些原型
+// 预先公布这些原型
 static const char* parse_value(XANADU_JSON_INFO* _Item, const char* _Value);
 
-/// 预先公布这些原型
+// 预先公布这些原型
 static char* print_value(XANADU_JSON_INFO* _Item, int depth, int _Format);
 
-/// 预先公布这些原型
+// 预先公布这些原型
 static const char* parse_array(XANADU_JSON_INFO* _Item, const char* _Value);
 
-/// 预先公布这些原型
+// 预先公布这些原型
 static char* print_array(XANADU_JSON_INFO* _Item, int depth, int _Format);
 
-/// 预先公布这些原型
+// 预先公布这些原型
 static const char* parse_object(XANADU_JSON_INFO* _Item, const char* _Value);
 
-/// 预先公布这些原型
+// 预先公布这些原型
 static char* print_object(XANADU_JSON_INFO* _Item, int depth, int _Format);
 
-/// 跳转空白和 CR/LF
+// 跳转空白和 CR/LF
 static const char* skip(const char* _In)
 {
 	while(_In && *_In && (unsigned char)*_In <= 32)
@@ -426,7 +426,7 @@ static const char* skip(const char* _In)
 }
 
 
-/// 解析器核心-当遇到文本时，适当处理
+// 解析器核心-当遇到文本时，适当处理
 static const char* parse_value(XANADU_JSON_INFO* _Item, const char* _Value)
 {
 	if(nullptr == _Value)
@@ -470,7 +470,7 @@ static const char* parse_value(XANADU_JSON_INFO* _Item, const char* _Value)
 	return 0; /* failure. */
 }
 
-/// 将值呈现为文本
+// 将值呈现为文本
 static char* print_value(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 {
 	auto		vOut = static_cast<char*>(nullptr);
@@ -508,7 +508,7 @@ static char* print_value(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 	return vOut;
 }
 
-/// 从输入文本生成数组
+// 从输入文本生成数组
 static const char* parse_array(XANADU_JSON_INFO* _Item, const char* _Value)
 {
 	auto		vChild = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -561,7 +561,7 @@ static const char* parse_array(XANADU_JSON_INFO* _Item, const char* _Value)
 	return 0; /* malformed. */
 }
 
-/// 将数组呈现为文本
+// 将数组呈现为文本
 static char* print_array(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 {
 	char** entries;
@@ -646,7 +646,7 @@ static char* print_array(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 	return out;
 }
 
-/// 从文本生成对象
+// 从文本生成对象
 static const char* parse_object(XANADU_JSON_INFO* _Item, const char* _Value)
 {
 	auto		vChild = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -723,7 +723,7 @@ static const char* parse_object(XANADU_JSON_INFO* _Item, const char* _Value)
 	return 0; /* malformed. */
 }
 
-/// 将对象呈现为文本
+// 将对象呈现为文本
 static char* print_object(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 {
 	auto		entries = static_cast<char**>(nullptr);
@@ -739,14 +739,14 @@ static char* print_object(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 	auto		numentries = static_cast<int>(0);
 	auto		fail = static_cast<int>(0);
 
-	/// 计算条目的数量
+	// 计算条目的数量
 	while(vChild)
 	{
 		numentries++;
 		vChild = vChild->next;
 	}
 
-	/// 为名称和对象分配空间
+	// 为名称和对象分配空间
 	entries = (char**)Xanadu::malloc(numentries * sizeof(char*));
 	if(!entries)
 	{
@@ -761,7 +761,7 @@ static char* print_object(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 	Xanadu::memset(entries, 0, sizeof(char*) * numentries);
 	Xanadu::memset(names, 0, sizeof(char*) * numentries);
 
-	/// 将所有结果收集到数组中
+	// 将所有结果收集到数组中
 	vChild = _Item->child;
 	_Depth++;
 	if(_Format)
@@ -783,7 +783,7 @@ static char* print_object(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 		vChild = vChild->next;
 	}
 
-	/// 尝试分配输出字符串
+	// 尝试分配输出字符串
 	if(!fail)
 	{
 		out = (char*)Xanadu::malloc(len);
@@ -793,7 +793,7 @@ static char* print_object(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 		fail = 1;
 	}
 
-	/// 失败处理
+	// 失败处理
 	if(fail)
 	{
 		for(i = 0; i < numentries; i++)
@@ -866,14 +866,14 @@ static char* print_object(XANADU_JSON_INFO* _Item, int _Depth, int _Format)
 }
 
 
-/// 数组列表处理
+// 数组列表处理
 static void suffix_object(XANADU_JSON_INFO* _Prev, XANADU_JSON_INFO* _Item)
 {
 	_Prev->next = _Item;
 	_Item->prev = _Prev;
 }
 
-/// 处理参考文献
+// 处理参考文献
 static XANADU_JSON_INFO* create_reference(XANADU_JSON_INFO* _Item)
 {
 	auto		vReference = XJson_New_Item();
@@ -889,7 +889,7 @@ static XANADU_JSON_INFO* create_reference(XANADU_JSON_INFO* _Item)
 }
 
 
-/// 提供一个JSON块，这将返回一个可以查询的XANADU_JSON_INFO对象。完成后请调用XJson_Delete
+// 提供一个JSON块，这将返回一个可以查询的XANADU_JSON_INFO对象。完成后请调用XJson_Delete
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_Parse(const char* _Value) noexcept
 {
 	auto		vChild = XJson_New_Item();
@@ -907,19 +907,19 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_Parse(const char* _Value) noexcept
 	return vChild;
 }
 
-/// 将XANADU_JSON_INFO实体呈现为文本以进行传输/存储。完成后释放字符
+// 将XANADU_JSON_INFO实体呈现为文本以进行传输/存储。完成后释放字符
 XANADU_JSON_EXPORT char* XJson_Print(XANADU_JSON_INFO* _Item) noexcept
 {
 	return print_value(_Item, 0, 1);
 }
 
-/// 将XANADU_JSON_INFO实体呈现为文本，以便传输/存储，而无需任何格式。完成后释放字符
+// 将XANADU_JSON_INFO实体呈现为文本，以便传输/存储，而无需任何格式。完成后释放字符
 XANADU_JSON_EXPORT char* XJson_PrintUnformatted(XANADU_JSON_INFO* _Item) noexcept
 {
 	return print_value(_Item, 0, 0);
 }
 
-/// 删除XANADU_JSON_INFO实体及其所有子实体
+// 删除XANADU_JSON_INFO实体及其所有子实体
 XANADU_JSON_EXPORT void XJson_Delete(XANADU_JSON_INFO* _Json) noexcept
 {
 	auto		vNext = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -947,7 +947,7 @@ XANADU_JSON_EXPORT void XJson_Delete(XANADU_JSON_INFO* _Json) noexcept
 }
 
 
-/// 返回数组（或对象）中的项数
+// 返回数组（或对象）中的项数
 XANADU_JSON_EXPORT int XJson_GetArraySize(XANADU_JSON_INFO* _Array) noexcept
 {
 	auto		vChild = _Array->child;
@@ -959,7 +959,7 @@ XANADU_JSON_EXPORT int XJson_GetArraySize(XANADU_JSON_INFO* _Array) noexcept
 	return vIndex;
 }
 
-/// 从数组“array”中检索项目编号“item”。如果不成功，则返回NULL
+// 从数组“array”中检索项目编号“item”。如果不成功，则返回NULL
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_GetArrayItem(XANADU_JSON_INFO* _Array, int _Item) noexcept
 {
 	auto		vChild = _Array->child;
@@ -972,7 +972,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_GetArrayItem(XANADU_JSON_INFO* _Array
 }
 
 
-/// 从对象获取项“string”。不区分大小写
+// 从对象获取项“string”。不区分大小写
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_GetObjectItem(XANADU_JSON_INFO* _Object, const char* _String) noexcept
 {
 	auto		vChild = _Object->child;
@@ -984,14 +984,14 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_GetObjectItem(XANADU_JSON_INFO* _Obje
 }
 
 
-/// 用于分析失败的原因。这将返回一个指向解析错误的指针。当XJson_Parse（）返回0时定义
+// 用于分析失败的原因。这将返回一个指向解析错误的指针。当XJson_Parse（）返回0时定义
 XANADU_JSON_EXPORT const char* XJson_GetErrorPtr() noexcept
 {
 	return _StaticErrorPtr;
 }
 
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateNull() noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1002,7 +1002,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateNull() noexcept
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateTrue() noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1013,7 +1013,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateTrue() noexcept
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateFalse() noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1024,7 +1024,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateFalse() noexcept
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateBool(int _Number) noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1035,7 +1035,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateBool(int _Number) noexcept
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateDouble(double _Number, int _Sign) noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1049,7 +1049,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateDouble(double _Number, int _Sig
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateInt(int64U _Number, int _Sign) noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1063,7 +1063,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateInt(int64U _Number, int _Sign) 
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateString(const char* _String) noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1075,7 +1075,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateString(const char* _String) noe
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateArray() noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1086,7 +1086,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateArray() noexcept
 	return vItem;
 }
 
-/// 这些调用创建适当类型的XANADU_JSON_INFO项
+// 这些调用创建适当类型的XANADU_JSON_INFO项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateObject() noexcept
 {
 	auto		vItem = XJson_New_Item();
@@ -1098,7 +1098,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateObject() noexcept
 }
 
 
-/// 创建int数组
+// 创建int数组
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateIntArray(int* _Numbers, int _Sign, int _Count) noexcept
 {
 	auto		vCreate = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -1120,7 +1120,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateIntArray(int* _Numbers, int _Si
 	return vArray;
 }
 
-/// 创建float数组
+// 创建float数组
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateFloatArray(float* _Numbers, int _Count) noexcept
 {
 	auto		vCreate = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -1142,7 +1142,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateFloatArray(float* _Numbers, int
 	return vArray;
 }
 
-/// 创建double数组
+// 创建double数组
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateDoubleArray(double* _Numbers, int _Count) noexcept
 {
 	auto		vCreate = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -1164,7 +1164,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateDoubleArray(double* _Numbers, i
 	return vArray;
 }
 
-/// 创建const char*数组
+// 创建const char*数组
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateStringArray(const char** _Strings, int _Count) noexcept
 {
 	auto		vCreate = static_cast<XANADU_JSON_INFO*>(nullptr);
@@ -1187,7 +1187,7 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_CreateStringArray(const char** _Strin
 }
 
 
-/// 将项附加到指定的数组/对象
+// 将项附加到指定的数组/对象
 XANADU_JSON_EXPORT void XJson_AddItemToArray(XANADU_JSON_INFO* _Array, XANADU_JSON_INFO* _Item) noexcept
 {
 	auto		vChild = _Array->child;
@@ -1209,7 +1209,7 @@ XANADU_JSON_EXPORT void XJson_AddItemToArray(XANADU_JSON_INFO* _Array, XANADU_JS
 	}
 }
 
-/// 将项附加到指定的数组/对象
+// 将项附加到指定的数组/对象
 XANADU_JSON_EXPORT void XJson_AddItemToArrayHead(XANADU_JSON_INFO* _Array, XANADU_JSON_INFO* _Item) noexcept
 {
 	auto		vChild = _Array->child;
@@ -1230,7 +1230,7 @@ XANADU_JSON_EXPORT void XJson_AddItemToArrayHead(XANADU_JSON_INFO* _Array, XANAD
 	}
 }
 
-/// 将项附加到指定的数组/对象
+// 将项附加到指定的数组/对象
 XANADU_JSON_EXPORT void XJson_AddItemToObject(XANADU_JSON_INFO* _Object, const char* _String, XANADU_JSON_INFO* _Item) noexcept
 {
 	if(nullptr == _Item)
@@ -1246,20 +1246,20 @@ XANADU_JSON_EXPORT void XJson_AddItemToObject(XANADU_JSON_INFO* _Object, const c
 }
 
 
-/// 将对项的引用附加到指定的数组/对象。如果要将现有的XANADU_JSON_INFO添加到新的XANADU_JSON_INFO，但不希望损坏现有的XANADU_JSON_INFO，请使用此选项
+// 将对项的引用附加到指定的数组/对象。如果要将现有的XANADU_JSON_INFO添加到新的XANADU_JSON_INFO，但不希望损坏现有的XANADU_JSON_INFO，请使用此选项
 XANADU_JSON_EXPORT void XJson_AddItemReferenceToArray(XANADU_JSON_INFO* _Array, XANADU_JSON_INFO* _Item) noexcept
 {
 	XJson_AddItemToArray(_Array, create_reference(_Item));
 }
 
-/// 将对项的引用附加到指定的数组/对象。如果要将现有的XANADU_JSON_INFO添加到新的XANADU_JSON_INFO，但不希望损坏现有的XANADU_JSON_INFO，请使用此选项
+// 将对项的引用附加到指定的数组/对象。如果要将现有的XANADU_JSON_INFO添加到新的XANADU_JSON_INFO，但不希望损坏现有的XANADU_JSON_INFO，请使用此选项
 XANADU_JSON_EXPORT void XJson_AddItemReferenceToObject(XANADU_JSON_INFO* _Object, const char* _String, XANADU_JSON_INFO* _Item) noexcept
 {
 	XJson_AddItemToObject(_Object, _String, create_reference(_Item));
 }
 
 
-/// 从数组/对象中移除/取消匹配项
+// 从数组/对象中移除/取消匹配项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_DetachItemFromArray(XANADU_JSON_INFO* _Array, int _Which) noexcept
 {
 	auto		vChild = _Array->child;
@@ -1288,13 +1288,13 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_DetachItemFromArray(XANADU_JSON_INFO*
 	return vChild;
 }
 
-/// 从数组/对象中移除/取消匹配项
+// 从数组/对象中移除/取消匹配项
 XANADU_JSON_EXPORT void XJson_DeleteItemFromArray(XANADU_JSON_INFO* _Array, int _Which) noexcept
 {
 	XJson_Delete(XJson_DetachItemFromArray(_Array, _Which));
 }
 
-/// 从数组/对象中移除/取消匹配项
+// 从数组/对象中移除/取消匹配项
 XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_DetachItemFromObject(XANADU_JSON_INFO* _Object, const char* _String) noexcept
 {
 	auto		vIndex = static_cast<int>(0);
@@ -1311,13 +1311,13 @@ XANADU_JSON_EXPORT XANADU_JSON_INFO* XJson_DetachItemFromObject(XANADU_JSON_INFO
 	return 0;
 }
 
-/// 从数组/对象中移除/取消匹配项
+// 从数组/对象中移除/取消匹配项
 XANADU_JSON_EXPORT void XJson_DeleteItemFromObject(XANADU_JSON_INFO* _Object, const char* _String) noexcept
 {
 	XJson_Delete(XJson_DetachItemFromObject(_Object, _String));
 }
 
-/// 更新数组项
+// 更新数组项
 XANADU_JSON_EXPORT void XJson_ReplaceItemInArray(XANADU_JSON_INFO* _Array, int _Which, XANADU_JSON_INFO* _NewItem) noexcept
 {
 	auto		vChild = _Array->child;
@@ -1348,7 +1348,7 @@ XANADU_JSON_EXPORT void XJson_ReplaceItemInArray(XANADU_JSON_INFO* _Array, int _
 	XJson_Delete(vChild);
 }
 
-/// 更新数组项
+// 更新数组项
 XANADU_JSON_EXPORT void XJson_ReplaceItemInObject(XANADU_JSON_INFO* _Object, const char* _String, XANADU_JSON_INFO* _NewItem) noexcept
 {
 	auto		vIndex = static_cast<int>(0);
@@ -1737,7 +1737,7 @@ bool XJsonObject::Parse(const UString& strJson) noexcept
 	_ThisJsonData = XJson_Parse(strJson.data());
 	if(nullptr == _ThisJsonData)
 	{
-		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
 		_ThisErrorMessage = L"prase json string error at ";
 		return false;
 	}
@@ -1886,7 +1886,7 @@ bool XJsonObject::Get(const UString& _Key, XJsonObject& _Value) const noexcept
 	}
 	auto		vJsonString = XJson_Print(vJsonStruct);
 
-	/// Fix : basic_string::_M_construct null not valid
+	// Fix : basic_string::_M_construct null not valid
 	auto		vJsonData = UString(vJsonString ? vJsonString : "");
 	Xanadu::free(vJsonString);
 	if(_Value.Parse(vJsonData))
@@ -2627,7 +2627,7 @@ bool XJsonObject::Replace(const UString& _Key, const XJsonObject& _Value) noexce
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
 		_ThisErrorMessage = L"prase json string error at ";
 		return false;
 	}
@@ -3316,7 +3316,7 @@ bool XJsonObject::Add(const XJsonObject& _Value) noexcept
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
 		_ThisErrorMessage = L"prase json string error";
 		return false;
 	}
@@ -3717,7 +3717,7 @@ bool XJsonObject::AddAsFirst(const XJsonObject& _Value) noexcept
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
 		_ThisErrorMessage = L"prase json string error at ";
 		return false;
 	}
@@ -4147,7 +4147,7 @@ bool XJsonObject::Replace(int _Which, const XJsonObject& _Value) noexcept
 	auto		vJsonStruct = XJson_Parse(_Value.ToString().data());
 	if(nullptr == vJsonStruct)
 	{
-		/// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
+		// _ThisErrorMessage = UString("prase json string error at ") + XJson_GetErrorPtr();
 		return false;
 	}
 	XJson_ReplaceItemInArray(vFocusData, _Which, vJsonStruct);

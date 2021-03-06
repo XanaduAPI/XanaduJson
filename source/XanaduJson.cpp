@@ -47,5 +47,5 @@ __attribute((destructor)) void Xanadu_Json_Library_Fini(void)
 {
 	Xanadu_Json_Release();
 };
-#endif//XANADU_SYSTEM_WINDOWS
+#endif // XANADU_SYSTEM_WINDOWS
 
